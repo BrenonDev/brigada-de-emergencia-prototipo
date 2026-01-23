@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Central de Emergência Institucional</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --vermelho: #b00020;
+  --vermelho-claro: #e53935;
+  --cinza-escuro: #1f1f1f;
+  --cinza: #2b2b2b;
+  --branco: #ffffff;
+}
+
+*{
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body{
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #1a1a1a, #000000);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container{
+  width: 90%;
+  max-width: 420px;
+  background: var(--cinza);
+  border-radius: 14px;
+  padding: 25px 20px 30px;
+  text-align: center;
+  box-shadow: 0 0 25px rgba(255,0,0,0.2);
+  border: 2px solid var(--vermelho);
+}
+
+.logo{
+  font-size: 40px;
+  margin-bottom: 5px;
+}
+
+h1{
+  color: var(--branco);
+  font-size: 1.6em;
+  margin-bottom: 8px;
+}
+
+p{
+  color: #cccccc;
+  font-size: 0.95em;
+  margin-bottom: 25px;
+}
+
+.btn{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px;
+  margin: 10px 0;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 1em;
+  font-weight: bold;
+  color: var(--branco);
+  background: linear-gradient(135deg, var(--vermelho), var(--vermelho-claro));
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.btn:hover{
+  transform: scale(1.03);
+  box-shadow: 0 6px 15px rgba(255,0,0,0.6);
+  opacity: 0.95;
+}
+
+.footer{
+  margin-top: 20px;
+  font-size: 0.75em;
+  color: #aaaaaa;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="logo">🚨</div>
+  <h1>Botões de Emergência</h1>
+  <p>Toque no botão correspondente para acionar o serviço desejado imediatamente.</p>
+
+  <!-- 1 -->
+  <a class="btn" href="tel:+5511999990001">
+    📞 Segurança Interna
+  </a>
+
+  <!-- 2 -->
+  <a class="btn" href="tel:+5511999990002">
+    🏥 Enfermaria / Primeiros Socorros
+  </a>
+
+  <!-- 3 -->
+  <a class="btn" href="tel:+5511999990003">
+    🚒 Corpo de Bombeiros
+  </a>
+
+  <!-- 4 -->
+  <a class="btn" href="tel:190">
+    🚓 Polícia Militar (190)
+  </a>
+
+  <!-- 5 -->
+  <a class="btn" href="tel:+5511999990004">
+    ⚡ Manutenção Predial de Emergência
+  </a>
+
+  <div class="footer">
+    Sistema de resposta rápida institucional
+  </div>
+</div>
+
+</body>
+</html>
