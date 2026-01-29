@@ -106,7 +106,7 @@ p{
   </a>
 
   <!-- 3 -->
-  <a class="btn" href="tel:+5511999990002">
+  <a class="btn" onclick="enviarAlertaWhatsApp('5515996287208')">
     🚒 Corpo de Bombeiros
   </a>
 
@@ -125,25 +125,54 @@ p{
   </div>
 </div>
 <script>
-function ligarWhatsApp(numero) {
-  const appLink = "whatsapp://call?phone=" + numero;
-  const webLink = "https://wa.me/" + numero;
+async function enviarAlertaWhatsApp(numero) {
+  if (!navigator.geolocation) {
+    alert("Geolocalização não é suportada neste dispositivo.");
+    return;
+  }
 
-  let mudouVisibilidade = false;
+  // Mensagem base
+  let mensagemBase = "🚨 PEDIDO DE AJUDA 🚨\nPreciso de ajuda agora!\nMinha localização é:";
 
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-      mudouVisibilidade = true;
-    }
-  });
+  // Mostra feedback ao usuário
+  alert("Vamos obter sua localização com alta precisão. Ative o GPS se solicitado.");
 
-  window.location.href = appLink;
+  const options = {
+    enableHighAccuracy: true, // força GPS
+    timeout: 20000,           // até 20s tentando
+    maximumAge: 0             // não usa cache
+  };
 
-  setTimeout(() => {
-    if (!mudouVisibilidade) {
-      window.location.href = webLink;
-    }
-  }, 1500);
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      const accuracy = position.coords.accuracy; // em metros
+
+      // Se a precisão for ruim (>100m), tenta de novo
+      if (accuracy > 100) {
+        alert("Localização ainda imprecisa (" + Math.round(accuracy) + "m). Tentando novamente...");
+        enviarAlertaWhatsApp(numero);
+        return;
+      }
+
+      const mapsLink = `https://maps.google.com/?q=${lat},${lon}`;
+
+      const mensagemFinal = `${mensagemBase}\n${mapsLink}\n\nPrecisão aproximada: ${Math.round(accuracy)} metros.`;
+
+      const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagemFinal)}`;
+
+      window.location.href = url;
+    },
+    error => {
+      if (error.code === error.PERMISSION_DENIED) {
+        alert("Você precisa permitir o acesso à localização para enviar o alerta.");
+      } else {
+        alert("Erro ao obter localização. Verifique se o GPS está ativado.");
+      }
+    },
+    options
+  );
 }
 </script>
 </body>
