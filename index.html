@@ -116,7 +116,7 @@ p{
   </a>
 
   <!-- 5 -->
-  <a class="btn" href="tel:+5511999990004">
+  <a class="btn" onclick="ligarWhatsApp('5511999999999')">
     ⚡ Manutenção Predial de Emergência
   </a>
 
@@ -124,6 +124,27 @@ p{
     Sistema de resposta rápida institucional
   </div>
 </div>
+<script>
+function ligarWhatsApp(numero) {
+  const appLink = "whatsapp://call?phone=" + numero;
+  const webLink = "https://wa.me/" + numero;
 
+  let mudouVisibilidade = false;
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      mudouVisibilidade = true;
+    }
+  });
+
+  window.location.href = appLink;
+
+  setTimeout(() => {
+    if (!mudouVisibilidade) {
+      window.location.href = webLink;
+    }
+  }, 1500);
+}
+</script>
 </body>
 </html>
