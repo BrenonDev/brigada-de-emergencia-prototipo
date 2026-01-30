@@ -78,7 +78,7 @@ function iniciarLocalizacao(){
   intervaloPrecisao = setInterval(()=>{
     precisaoMinima += 5;
     console.log("Precisão mínima agora:", precisaoMinima, "m");
-  },1000);
+  },500);
 
   watchID = navigator.geolocation.watchPosition(
     pos => {
