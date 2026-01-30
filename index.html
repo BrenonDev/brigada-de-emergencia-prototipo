@@ -74,11 +74,10 @@ function iniciarLocalizacao(){
     return;
   }
 
-  // aumenta a tolerância a cada 1 segundo
   intervaloPrecisao = setInterval(()=>{
-    precisaoMinima += 5;
+    precisaoMinima += 2;
     console.log("Precisão mínima agora:", precisaoMinima, "m");
-  },500);
+  },250);
 
   watchID = navigator.geolocation.watchPosition(
     pos => {
