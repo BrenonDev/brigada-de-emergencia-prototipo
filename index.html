@@ -116,9 +116,12 @@ function enviarWhatsApp(lat,lon,accuracy){
 
   const msg =
 `\uD83D\uDEA8 PEDIDO DE AJUDA \uD83D\uDEA8
+
 Preciso de ajuda agora!
+
 Minha localização:
 ${link}
+
 Precisão aproximada: ${Math.round(accuracy)} metros.`;
 
   const url = `https://wa.me/${NUMERO_DESTINO}?text=${encodeURIComponent(msg)}`;
