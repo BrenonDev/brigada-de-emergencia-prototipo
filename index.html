@@ -113,18 +113,16 @@ function pararLocalizacao(){
 
 function enviarWhatsApp(lat,lon,accuracy){
   const link = `https://maps.google.com/?q=${lat},${lon}&t=k`;
-  
+    const emoji = "⚠️";
+
   const msg =
-`🆘 PEDIDO DE AJUDA 🆘
+    emoji + " PEDIDO DE AJUDA " + emoji + "\n" +
+    "Preciso de ajuda agora!\n" +
+    "Minha localização:\n" +
+    link + "\n" +
+    "Precisão aproximada: " + Math.round(accuracy) + " metros.";
 
-Preciso de ajuda agora!
-
-Minha localização:
-${link}
-
-Precisão aproximada: ${Math.round(accuracy)} metros.`;
-
-  const url = `https://wa.me/${NUMERO_DESTINO}?text=${encodeURIComponent(msg)}`;
+  const url = "https://wa.me/" + NUMERO_DESTINO + "?text=" + encodeURIComponent(msg);
   window.open(url,"_blank");
 }
 </script>
