@@ -113,9 +113,9 @@ function pararLocalizacao(){
 
 function enviarWhatsApp(lat,lon,accuracy){
   const link = `https://maps.google.com/?q=${lat},${lon}&t=k`;
-  const emoji = "%F0%9F%9A%A8";
+  
   const msg =
-`${emoji} PEDIDO DE AJUDA ${emoji}
+`🆘 PEDIDO DE AJUDA 🆘
 
 Preciso de ajuda agora!
 
@@ -124,7 +124,7 @@ ${link}
 
 Precisão aproximada: ${Math.round(accuracy)} metros.`;
 
-  const url = `https://wa.me/${NUMERO_DESTINO}?text=${msg}`;
+  const url = `https://wa.me/${NUMERO_DESTINO}?text=${encodeURIComponent(msg)}`;
   window.open(url,"_blank");
 }
 </script>
