@@ -164,7 +164,7 @@ let tentativa = 0;
 const maxTentativas = 30;
 
 /* Precisão mínima desejada (em metros) */
-let precisaoAceitavel = 1;
+let precisaoAceitavel = 5;
 
 /* Função chamada ao clicar no botão */
 function enviarAlertaParaTodos() {
@@ -201,8 +201,8 @@ function obterLocalizacaoPrecisa() {
       if (accuracy <= precisaoAceitavel || tentativa >= maxTentativas) {
         dispararWhatsApp(lat, lon, accuracy);
       } else {
-        precisaoAceitavel += 1; // aceita erro maior
-        setTimeout(obterLocalizacaoPrecisa, 3000); // tenta de novo
+        precisaoAceitavel += 5; // aceita erro maior
+        setTimeout(obterLocalizacaoPrecisa, 1500); // tenta de novo
       }
     },
 
@@ -210,7 +210,7 @@ function obterLocalizacaoPrecisa() {
       console.log("Erro localização:", err);
 
       if (tentativa < maxTentativas) {
-        setTimeout(obterLocalizacaoPrecisa, 3000);
+        setTimeout(obterLocalizacaoPrecisa, 1500);
       } else {
         alert("Não foi possível obter localização precisa.");
       }
