@@ -113,9 +113,9 @@ function pararLocalizacao(){
 
 function enviarWhatsApp(lat,lon,accuracy){
   const link = `https://maps.google.com/?q=${lat},${lon}&t=k`;
-
+  const emoji = String.fromCodePoint(0x1F6A8);
   const msg =
-`\uD83D\uDEA8 PEDIDO DE AJUDA \uD83D\uDEA8
+`${emoji} PEDIDO DE AJUDA ${emoji}
 
 Preciso de ajuda agora!
 
