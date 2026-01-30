@@ -1,11 +1,21 @@
 <!DOCTYPE html>
+<!-- Define que este documento é HTML5 -->
+
 <html lang="pt-BR">
+<!-- Início do HTML e define o idioma como português do Brasil -->
+
 <head>
 <meta charset="UTF-8">
+<!-- Define codificação de caracteres (acentos funcionam corretamente) -->
+
 <title>Central de Emergência Institucional</title>
+<!-- Título da aba do navegador -->
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Faz o layout se adaptar ao tamanho da tela (responsivo) -->
 
 <style>
+/* Define variáveis globais de cores */
 :root{
   --vermelho: #b00020;
   --vermelho-claro: #e53935;
@@ -14,11 +24,13 @@
   --branco: #ffffff;
 }
 
+/* Aplica box-sizing e fonte padrão a todos os elementos */
 *{
   box-sizing: border-box;
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Estilo geral do corpo da página */
 body{
   margin: 0;
   min-height: 100dvh;
@@ -28,6 +40,7 @@ body{
   align-items: center;
 }
 
+/* Estilo da caixa principal */
 .container{
   width: 90%;
   max-width: 420px;
@@ -39,23 +52,27 @@ body{
   border: 2px solid var(--vermelho);
 }
 
+/* Estilo do ícone de sirene */
 .logo{
   font-size: 40px;
   margin-bottom: 5px;
 }
 
+/* Estilo do título */
 h1{
   color: var(--branco);
   font-size: 1.6em;
   margin-bottom: 8px;
 }
 
+/* Estilo do texto descritivo */
 p{
   color: #cccccc;
   font-size: 0.95em;
   margin-bottom: 25px;
 }
 
+/* Estilo dos botões */
 .btn{
   display: flex;
   align-items: center;
@@ -74,12 +91,14 @@ p{
   box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
+/* Efeito ao passar o mouse nos botões */
 .btn:hover{
   transform: scale(1.03);
   box-shadow: 0 6px 15px rgba(255,0,0,0.6);
   opacity: 0.95;
 }
 
+/* Estilo do rodapé */
 .footer{
   margin-top: 20px;
   font-size: 0.75em;
@@ -91,86 +110,112 @@ p{
 <body>
 
 <div class="container">
+  <!-- Ícone de alerta -->
   <div class="logo">🚨</div>
+
+  <!-- Título -->
   <h1>Botões de Emergência</h1>
+
+  <!-- Texto explicativo -->
   <p>Toque no botão correspondente para acionar o serviço desejado imediatamente.</p>
 
-  <!-- 1 -->
+  <!-- Botão que liga para Segurança Interna -->
   <a class="btn" href="tel:+5511999990001">
     📞 Segurança Interna
   </a>
 
-  <!-- 2 -->
+  <!-- Botão que liga para Enfermaria -->
   <a class="btn" href="tel:+5511999990002">
     🏥 Enfermaria / Primeiros Socorros
   </a>
 
-  <!-- 3 -->
+  <!-- Botão que chama função JavaScript -->
   <a class="btn" onclick="enviarAlertaParaTodos()">
     🚒 Corpo de Bombeiros
   </a>
 
-  <!-- 4 -->
+  <!-- Botão que liga para a polícia -->
   <a class="btn" href="tel:190">
     🚓 Polícia Militar (190)
   </a>
 
-  <!-- 5 -->
+  <!-- Botão que liga para manutenção -->
   <a class="btn" href="tel:+5511999990002">
     ⚡ Manutenção Predial de Emergência
   </a>
 
+  <!-- Rodapé -->
   <div class="footer">
     Sistema de resposta rápida institucional
   </div>
 </div>
+
 <script>
+/* Lista de números que receberão a mensagem */
 const contatos = [
   "5515996287208",
   "5515988221498"
 ];
 
+/* Contador de tentativas de localização */
 let tentativa = 0;
-const maxTentativas = 30;
-let precisaoAceitavel = 1; // metros
 
+/* Número máximo de tentativas */
+const maxTentativas = 30;
+
+/* Precisão mínima desejada (em metros) */
+let precisaoAceitavel = 1;
+
+/* Função chamada ao clicar no botão */
 function enviarAlertaParaTodos() {
-  tentativa = 0;
-  precisaoAceitavel = 1;
-  obterLocalizacaoPrecisa();
+  tentativa = 0;             // zera tentativas
+  precisaoAceitavel = 1;     // reseta precisão
+  obterLocalizacaoPrecisa(); // inicia busca da localização
 }
 
+/* Função que tenta obter a localização */
 function obterLocalizacaoPrecisa() {
+
+  // Verifica se o navegador suporta GPS
   if (!navigator.geolocation) {
     alert("Geolocalização não suportada.");
     return;
   }
 
-  tentativa++;
+  tentativa++; // soma 1 tentativa
 
   navigator.geolocation.getCurrentPosition(
     pos => {
+      // Captura latitude
       const lat = pos.coords.latitude;
+
+      // Captura longitude
       const lon = pos.coords.longitude;
+
+      // Captura precisão em metros
       const accuracy = pos.coords.accuracy;
 
       console.log("Tentativa:", tentativa, "Precisão:", accuracy);
 
+      // Se atingiu a precisão ou estourou tentativas
       if (accuracy <= precisaoAceitavel || tentativa >= maxTentativas) {
         dispararWhatsApp(lat, lon, accuracy);
       } else {
-        precisaoAceitavel += 1; // vai aceitando área maior
-        setTimeout(obterLocalizacaoPrecisa, 3000);
+        precisaoAceitavel += 1; // aceita erro maior
+        setTimeout(obterLocalizacaoPrecisa, 3000); // tenta de novo
       }
     },
+
     err => {
       console.log("Erro localização:", err);
+
       if (tentativa < maxTentativas) {
         setTimeout(obterLocalizacaoPrecisa, 3000);
       } else {
         alert("Não foi possível obter localização precisa.");
       }
     },
+
     {
       enableHighAccuracy: true,
       timeout: 60000,
@@ -179,6 +224,7 @@ function obterLocalizacaoPrecisa() {
   );
 }
 
+/* Função que cria a mensagem */
 function dispararWhatsApp(lat, lon, accuracy) {
   const linkMapa = `https://maps.google.com/?q=${lat},${lon}`;
 
@@ -192,6 +238,7 @@ Precisão aproximada: ${Math.round(accuracy)} metros.`;
   abrirChatsSequencialmente(mensagem);
 }
 
+/* Função que abre os contatos um por um */
 function abrirChatsSequencialmente(mensagem) {
   let i = 0;
 
@@ -202,7 +249,7 @@ function abrirChatsSequencialmente(mensagem) {
     window.open(url, "_blank");
 
     i++;
-    setTimeout(abrirProximo, 5000); // intervalo entre contatos
+    setTimeout(abrirProximo, 5000);
   }
 
   abrirProximo();
