@@ -32,7 +32,7 @@ p{color:#ccc;margin-bottom:25px;}
 
 .btn{
   display:flex;
-  gap:16px
+  gap:16px;
   justify-content:space-between;
   align-items:center;
   width:100%;
@@ -187,7 +187,7 @@ function iniciarLocalizacao(){
 
   intervaloPrecisao = setInterval(()=>{
     precisaoMinima += 5;
-  },1500);
+  },500);
 
   watchID = navigator.geolocation.watchPosition(
     pos => {
