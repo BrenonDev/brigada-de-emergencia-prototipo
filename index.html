@@ -1,157 +1,3 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<title>Central de Emergência Institucional</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-:root{
-  --vermelho: #b00020;
-  --vermelho-claro: #e53935;
-  --cinza: #2b2b2b;
-  --branco: #ffffff;
-}
-*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}
-body{
-  margin:0;min-height:100dvh;
-  background:linear-gradient(180deg,#1a1a1a,#000);
-  display:flex;justify-content:center;align-items:center;
-}
-.container{
-  width:90%;max-width:420px;
-  background:var(--cinza);
-  border-radius:14px;
-  padding:25px 20px 30px;
-  text-align:center;
-  border:2px solid var(--vermelho);
-}
-.logo{font-size:40px;margin-bottom:5px;}
-h1{color:var(--branco);font-size:1.6em;}
-p{color:#ccc;margin-bottom:25px;}
-
-.btn{
-  display:flex;
-  gap:16px;
-  justify-content:space-between;
-  align-items:center;
-  width:100%;
-  padding:12px 16px;
-  margin:10px 0;
-  border-radius:10px;
-  text-decoration:none;
-  font-weight:bold;
-  color:white;
-  background:linear-gradient(135deg,#b00020,#e53935);
-}
-
-.btn span{
-  font-size:1.25em;
-}
-  
-.btn .emoji{
-  font-size:1.75em;
-}
-
-.footer{margin-top:20px;font-size:.75em;color:#aaa;}
-
-#lightbox{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.85);
-  display:none;
-  justify-content:center;
-  align-items:center;
-  z-index:999;
-}
-.lightbox-content{
-  background:#2b2b2b;
-  padding:25px;
-  border-radius:12px;
-  text-align:center;
-  color:white;
-  width:85%;
-  max-width:300px;
-  border:2px solid var(--vermelho);
-}
-.spinner{
-  width:40px;
-  height:40px;
-  border:4px solid #555;
-  border-top:4px solid #e53935;
-  border-radius:50%;
-  animation:spin 1s linear infinite;
-  margin:15px auto;
-}
-@keyframes spin{
-  to{transform:rotate(360deg);}
-}
-.lightbox-content button{
-  margin-top:15px;
-  padding:10px 15px;
-  border:none;
-  border-radius:8px;
-  background:#e53935;
-  color:white;
-  font-weight:bold;
-  display:none;
-}
-</style>
-</head>
-
-<body>
-
-<div class="container">
-  <div class="logo">🚨</div>
-  <h1>Botões de Emergência</h1>
-  <p>Selecione o tipo de ocorrência.</p>
-
-  <!-- 1 SOCORRO -->
-  <a class="btn" href="#" onclick="definirTipo('SOCORRO'); iniciarLocalizacao();return false;">
-    <span class="emoji">✚</span><span>SOCORRO</span><span class="emoji">✚</span>
-  </a>
-
-  <!-- 2 FOGO -->
-  <a class="btn" href="#" onclick="definirTipo('FOGO'); iniciarLocalizacao();return false;">
-    <span class="emoji">🔥</span><span>FOGO</span><span class="emoji">🔥</span>
-  </a>
-
-  <!-- 3 VIOLÊNCIA -->
-  <a class="btn" href="#" onclick="definirTipo('VIOLENCIA'); iniciarLocalizacao();return false;">
-    <span class="emoji">🚨</span><span>VIOLÊNCIA</span><span class="emoji">🚨</span>
-  </a>
-
-  <!-- 4 AMEAÇA -->
-  <a class="btn" href="#" onclick="definirTipo('AMEACA'); iniciarLocalizacao();return false;">
-    <span class="emoji">⚠️</span><span>AMEAÇA</span><span class="emoji">⚠️</span>
-  </a>
-
-  <!-- 5 VAZAMENTO -->
-  <a class="btn" href="#" onclick="definirTipo('VAZAMENTO'); iniciarLocalizacao();return false;">
-    <span class="emoji">☣</span><span>VAZAMENTO</span><span class="emoji">☣</span>
-  </a>
-
-  <!-- 6 RISCO -->
-  <a class="btn" href="#" onclick="definirTipo('RISCO'); iniciarLocalizacao();return false;">
-    <span class="emoji">⚡</span><span>RISCO</span><span class="emoji">⚡</span>
-  </a>
-
-  <!-- 7 OUTROS -->
-  <a class="btn" href="#" onclick="definirTipo('OUTROS'); iniciarLocalizacao();return false;">
-    <span class="emoji">❔</span><span>OUTROS</span><span class="emoji">❔</span>
-  </a>
-
-  <div class="footer">Sistema de resposta rápida institucional</div>
-</div>
-
-<div id="lightbox">
-  <div class="lightbox-content">
-    <div class="spinner"></div>
-    <p><b>Localizando</b><br>Melhorando precisao do GPS</p>
-    <button id="btnForcar" onclick="enviarSemPrecisao()">Enviar sem precisao</button>
-  </div>
-</div>
-
 <script>
 const NUMERO_DESTINO = "5515981144802";
 
@@ -163,23 +9,22 @@ let ultimoLat = null;
 let ultimoLon = null;
 let ultimaPrecisao = null;
 let timerBotao = null;
+let timerSemGps = null;
 
 function definirTipo(tipo){
   tipoEmergencia = tipo;
 }
 
-function mostrarLightbox(){
+function mostrarLightbox(texto){
   document.getElementById("lightbox").style.display="flex";
+  document.querySelector("#lightbox p").innerHTML = texto;
   document.getElementById("btnForcar").style.display="none";
-
-  timerBotao = setTimeout(()=>{
-    document.getElementById("btnForcar").style.display="block";
-  },5000);
 }
 
 function esconderLightbox(){
   document.getElementById("lightbox").style.display="none";
   clearTimeout(timerBotao);
+  clearTimeout(timerSemGps);
 }
 
 function iniciarLocalizacao(){
@@ -194,17 +39,36 @@ function iniciarLocalizacao(){
   ultimoLon = null;
   ultimaPrecisao = null;
 
-  mostrarLightbox();
+  mostrarLightbox("<b>Ative a localização</b><br>Para enviar sua posição");
 
-  intervaloPrecisao = setInterval(()=>{
-    precisaoMinima += 5;
-  },500);
+  timerSemGps = setTimeout(()=>{
+    document.getElementById("btnForcar").style.display="block";
+  },10000);
 
   watchID = navigator.geolocation.watchPosition(
     pos => {
+      clearTimeout(timerSemGps);
+
+      document.querySelector("#lightbox p").innerHTML =
+      "<b>Localizando</b><br>Melhorando precisão do GPS";
+
+      document.getElementById("btnForcar").style.display="none";
+
+      precisaoMinima = 10;
+
+      if(!intervaloPrecisao){
+        intervaloPrecisao = setInterval(()=>{
+          precisaoMinima += 5;
+        },500);
+      }
+
       ultimoLat = pos.coords.latitude;
       ultimoLon = pos.coords.longitude;
       ultimaPrecisao = pos.coords.accuracy;
+
+      timerBotao = setTimeout(()=>{
+        document.getElementById("btnForcar").style.display="block";
+      },5000);
 
       if(ultimaPrecisao <= precisaoMinima){
         pararLocalizacao();
@@ -234,6 +98,7 @@ function pararLocalizacao(){
     watchID = null;
   }
   clearInterval(intervaloPrecisao);
+  intervaloPrecisao = null;
   esconderLightbox();
 }
 
@@ -262,6 +127,3 @@ Precisao: ${prec}`;
   window.open(url,"_blank");
 }
 </script>
-
-</body>
-</html>
