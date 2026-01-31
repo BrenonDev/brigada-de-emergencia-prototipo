@@ -238,7 +238,7 @@ function enviarWhatsApp(lat,lon,accuracy){
   let prec = "Nao disponivel";
 
   if(lat && lon){
-    link = "https://maps.google.com/?q=" + lat + "," + lon;
+    link = "https://maps.google.com/?q=" + lat + "," + lon + "&t=k";
   }
 
   if(accuracy){
@@ -254,7 +254,7 @@ Localizacao: ${link}
 
 Precisao: ${prec}`;
 
-  const url = `https://wa.me/${NUMERO_DESTINO}?text=${encodeURIComponent(msg)}&t=k`;
+  const url = `https://wa.me/${NUMERO_DESTINO}?text=${encodeURIComponent(msg)}`;
   window.open(url,"_blank");
 }
 </script>
