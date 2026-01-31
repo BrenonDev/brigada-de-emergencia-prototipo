@@ -32,6 +32,7 @@ p{color:#ccc;margin-bottom:25px;}
 
 .btn{
   display:flex;
+  gap:16px
   justify-content:space-between;
   align-items:center;
   width:100%;
@@ -144,7 +145,7 @@ p{color:#ccc;margin-bottom:25px;}
 const NUMERO_DESTINO = "5515981144802";
 
 let watchID = null;
-let precisaoMinima = 50;
+let precisaoMinima = 10;
 let intervaloPrecisao = null;
 let tipoEmergencia = "EMERGENCIA";
 let ultimoLat = null;
@@ -177,7 +178,7 @@ function iniciarLocalizacao(){
     return;
   }
 
-  precisaoMinima = 50;
+  precisaoMinima = 10;
   ultimoLat = null;
   ultimoLon = null;
   ultimaPrecisao = null;
@@ -185,8 +186,8 @@ function iniciarLocalizacao(){
   mostrarLightbox();
 
   intervaloPrecisao = setInterval(()=>{
-    precisaoMinima += 20;
-  },2000);
+    precisaoMinima += 5;
+  },1500);
 
   watchID = navigator.geolocation.watchPosition(
     pos => {
