@@ -102,32 +102,39 @@ p{color:#ccc;margin-bottom:25px;}
   <h1>Botões de Emergência</h1>
   <p>Selecione o tipo de ocorrência.</p>
 
-  <a class="btn" href="#" onclick="definirTipo('SOCORRO MEDICO'); iniciarLocalizacao();return false;">
+  <!-- 1 SOCORRO -->
+  <a class="btn" href="#" onclick="definirTipo('SOCORRO'); iniciarLocalizacao();return false;">
     <span class="emoji">✚</span><span>SOCORRO</span><span class="emoji">✚</span>
   </a>
 
-  <a class="btn" href="#" onclick="definirTipo('INCENDIO OU FUMACA'); iniciarLocalizacao();return false;">
+  <!-- 2 FOGO -->
+  <a class="btn" href="#" onclick="definirTipo('FOGO'); iniciarLocalizacao();return false;">
     <span class="emoji">🔥</span><span>FOGO</span><span class="emoji">🔥</span>
   </a>
 
-  <a class="btn" href="#" onclick="definirTipo('RISCO ESTRUTURAL'); iniciarLocalizacao();return false;">
-    <span class="emoji">⚡</span><span>RISCO</span><span class="emoji">⚡</span>
-  </a>
-
-  <a class="btn" href="#" onclick="definirTipo('CONFLITO OU AGRESSAO'); iniciarLocalizacao();return false;">
+  <!-- 3 VIOLÊNCIA -->
+  <a class="btn" href="#" onclick="definirTipo('VIOLENCIA'); iniciarLocalizacao();return false;">
     <span class="emoji">🚨</span><span>VIOLÊNCIA</span><span class="emoji">🚨</span>
   </a>
 
-  <a class="btn" href="#" onclick="definirTipo('VAZAMENTO OU CONTAMINACAO'); iniciarLocalizacao();return false;">
+  <!-- 4 AMEAÇA -->
+  <a class="btn" href="#" onclick="definirTipo('AMEACA'); iniciarLocalizacao();return false;">
+    <span class="emoji">⚠</span><span>AMEAÇA</span><span class="emoji">⚠</span>
+  </a>
+
+  <!-- 5 VAZAMENTO -->
+  <a class="btn" href="#" onclick="definirTipo('VAZAMENTO'); iniciarLocalizacao();return false;">
     <span class="emoji">☣</span><span>VAZAMENTO</span><span class="emoji">☣</span>
   </a>
 
-  <a class="btn" href="#" onclick="definirTipo('EVACUACAO'); iniciarLocalizacao();return false;">
-    <span class="emoji">🚪</span><span>EVACUAR</span><span class="emoji">🚪</span>
+  <!-- 6 RISCO -->
+  <a class="btn" href="#" onclick="definirTipo('RISCO'); iniciarLocalizacao();return false;">
+    <span class="emoji">⚡</span><span>RISCO</span><span class="emoji">⚡</span>
   </a>
 
+  <!-- 7 OUTROS -->
   <a class="btn" href="#" onclick="definirTipo('OUTROS'); iniciarLocalizacao();return false;">
-    <span class="emoji">⚠</span><span>OUTROS</span><span class="emoji">⚠</span>
+    <span class="emoji">❓</span><span>OUTROS</span><span class="emoji">❓</span>
   </a>
 
   <div class="footer">Sistema de resposta rápida institucional</div>
