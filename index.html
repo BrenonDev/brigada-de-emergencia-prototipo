@@ -29,20 +29,27 @@ body{
 .logo{font-size:40px;margin-bottom:5px;}
 h1{color:var(--branco);font-size:1.6em;}
 p{color:#ccc;margin-bottom:25px;}
+
 .btn{
-  display:flex;justify-content:center;align-items:center;
-  width:100%;padding:16px;margin:10px 0;
-  border-radius:10px;text-decoration:none;
-  font-weight:bold;color:white;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  width:100%;
+  padding:16px;
+  margin:10px 0;
+  border-radius:10px;
+  text-decoration:none;
+  font-weight:bold;
+  color:white;
   background:linear-gradient(135deg,#b00020,#e53935);
 }
-.btn span.emoji{
-  font-size:1.4em;
-  margin:0 8px;
+
+.btn .emoji{
+  font-size:1.5em;
 }
+
 .footer{margin-top:20px;font-size:.75em;color:#aaa;}
 
-/* LIGHTBOX */
 #lightbox{
   position:fixed;
   inset:0;
@@ -82,6 +89,7 @@ p{color:#ccc;margin-bottom:25px;}
   background:#e53935;
   color:white;
   font-weight:bold;
+  display:none;
 }
 </style>
 </head>
@@ -91,45 +99,44 @@ p{color:#ccc;margin-bottom:25px;}
 <div class="container">
   <div class="logo">🚨</div>
   <h1>Botões de Emergência</h1>
-  <p>Toque no botão correspondente para acionar ajuda.</p>
+  <p>Selecione o tipo de ocorrência.</p>
 
-  <a class="btn" href="#" onclick="definirTipo('SOCORRO MÉDICO'); iniciarLocalizacao(); return false;">
-    <span class="emoji">✚</span> SOCORRO MÉDICO <span class="emoji">✚</span>
+  <a class="btn" href="#" onclick="definirTipo('SOCORRO MEDICO'); iniciarLocalizacao();return false;">
+    <span class="emoji">✚</span><span>SOCORRO MEDICO</span><span class="emoji">✚</span>
   </a>
 
-  <a class="btn" href="#" onclick="definirTipo('INCÊNDIO / FUMAÇA'); iniciarLocalizacao(); return false;">
-    <span class="emoji">🔥</span> INCÊNDIO / FUMAÇA <span class="emoji">🔥</span>
+  <a class="btn" href="#" onclick="definirTipo('INCENDIO OU FUMACA'); iniciarLocalizacao();return false;">
+    <span class="emoji">🔥</span><span>INCENDIO OU FUMACA</span><span class="emoji">🔥</span>
   </a>
 
-  <a class="btn" href="#" onclick="definirTipo('RISCO ESTRUTURAL'); iniciarLocalizacao(); return false;">
-    <span class="emoji">⚡</span> RISCO ESTRUTURAL <span class="emoji">⚡</span>
+  <a class="btn" href="#" onclick="definirTipo('RISCO ESTRUTURAL'); iniciarLocalizacao();return false;">
+    <span class="emoji">⚡</span><span>RISCO ESTRUTURAL</span><span class="emoji">⚡</span>
   </a>
 
-  <a class="btn" href="#" onclick="definirTipo('CONFLITO / AGRESSÃO'); iniciarLocalizacao(); return false;">
-    <span class="emoji">🚨</span> CONFLITO / AGRESSÃO <span class="emoji">🚨</span>
+  <a class="btn" href="#" onclick="definirTipo('CONFLITO OU AGRESSAO'); iniciarLocalizacao();return false;">
+    <span class="emoji">🚨</span><span>CONFLITO OU AGRESSAO</span><span class="emoji">🚨</span>
   </a>
 
-  <a class="btn" href="#" onclick="definirTipo('VAZAMENTO / CONTAMINAÇÃO'); iniciarLocalizacao(); return false;">
-    <span class="emoji">☣</span> VAZAMENTO / CONTAMINAÇÃO <span class="emoji">☣</span>
+  <a class="btn" href="#" onclick="definirTipo('VAZAMENTO OU CONTAMINACAO'); iniciarLocalizacao();return false;">
+    <span class="emoji">☣</span><span>VAZAMENTO OU CONTAMINACAO</span><span class="emoji">☣</span>
   </a>
 
-  <a class="btn" href="#" onclick="definirTipo('EVACUAÇÃO'); iniciarLocalizacao(); return false;">
-    <span class="emoji">🚪</span> EVACUAÇÃO <span class="emoji">🚪</span>
+  <a class="btn" href="#" onclick="definirTipo('EVACUACAO'); iniciarLocalizacao();return false;">
+    <span class="emoji">🚪</span><span>EVACUACAO</span><span class="emoji">🚪</span>
   </a>
 
-  <a class="btn" href="#" onclick="definirTipo('OUTROS'); iniciarLocalizacao(); return false;">
-    <span class="emoji">⚠</span> OUTROS <span class="emoji">⚠</span>
+  <a class="btn" href="#" onclick="definirTipo('OUTROS'); iniciarLocalizacao();return false;">
+    <span class="emoji">⚠</span><span>OUTROS</span><span class="emoji">⚠</span>
   </a>
 
   <div class="footer">Sistema de resposta rápida institucional</div>
 </div>
 
-<!-- LIGHTBOX -->
 <div id="lightbox">
   <div class="lightbox-content">
     <div class="spinner"></div>
-    <p><b>Localizando…</b><br>Melhorando precisão do GPS</p>
-    <button onclick="enviarSemPrecisao()">Enviar sem precisão</button>
+    <p><b>Localizando</b><br>Melhorando precisao do GPS</p>
+    <button id="btnForcar" onclick="enviarSemPrecisao()">Enviar sem precisao</button>
   </div>
 </div>
 
@@ -137,9 +144,13 @@ p{color:#ccc;margin-bottom:25px;}
 const NUMERO_DESTINO = "5515981144802";
 
 let watchID = null;
-let precisaoMinima = 5;
+let precisaoMinima = 50;
 let intervaloPrecisao = null;
-let tipoEmergencia = "EMERGÊNCIA";
+let tipoEmergencia = "EMERGENCIA";
+let ultimoLat = null;
+let ultimoLon = null;
+let ultimaPrecisao = null;
+let timerBotao = null;
 
 function definirTipo(tipo){
   tipoEmergencia = tipo;
@@ -147,51 +158,62 @@ function definirTipo(tipo){
 
 function mostrarLightbox(){
   document.getElementById("lightbox").style.display="flex";
+  document.getElementById("btnForcar").style.display="none";
+
+  timerBotao = setTimeout(()=>{
+    document.getElementById("btnForcar").style.display="block";
+  },5000);
 }
 
 function esconderLightbox(){
   document.getElementById("lightbox").style.display="none";
+  clearTimeout(timerBotao);
 }
 
 function iniciarLocalizacao(){
-  precisaoMinima = 5;
-  mostrarLightbox();
 
   if(!navigator.geolocation){
-    alert("Geolocalização não suportada.");
-    esconderLightbox();
+    enviarWhatsApp(null,null,null);
     return;
   }
 
+  precisaoMinima = 50;
+  ultimoLat = null;
+  ultimoLon = null;
+  ultimaPrecisao = null;
+
+  mostrarLightbox();
+
   intervaloPrecisao = setInterval(()=>{
-    precisaoMinima += 2;
-  },250);
+    precisaoMinima += 20;
+  },2000);
 
   watchID = navigator.geolocation.watchPosition(
     pos => {
-      const lat = pos.coords.latitude;
-      const lon = pos.coords.longitude;
-      const accuracy = pos.coords.accuracy;
+      ultimoLat = pos.coords.latitude;
+      ultimoLon = pos.coords.longitude;
+      ultimaPrecisao = pos.coords.accuracy;
 
-      if(accuracy <= precisaoMinima){
+      if(ultimaPrecisao <= precisaoMinima){
         pararLocalizacao();
-        enviarWhatsApp(lat,lon,accuracy);
+        enviarWhatsApp(ultimoLat,ultimoLon,ultimaPrecisao);
       }
     },
     err => {
-      console.log("Erro:", err);
+      pararLocalizacao();
+      enviarWhatsApp(null,null,null);
     },
     {
       enableHighAccuracy:true,
       maximumAge:0,
-      timeout:30000
+      timeout:20000
     }
   );
 }
 
 function enviarSemPrecisao(){
   pararLocalizacao();
-  enviarWhatsApp("","",null);
+  enviarWhatsApp(null,null,null);
 }
 
 function pararLocalizacao(){
@@ -204,17 +226,25 @@ function pararLocalizacao(){
 }
 
 function enviarWhatsApp(lat,lon,accuracy){
-  let link = lat ? `https://maps.google.com/?q=${lat},${lon}&t=k` : "Localização não precisa";
+  let link = "Nao disponivel";
+  let prec = "Nao disponivel";
+
+  if(lat && lon){
+    link = "https://maps.google.com/?q=" + lat + "," + lon;
+  }
+
+  if(accuracy){
+    prec = Math.round(accuracy) + " metros";
+  }
 
   const msg =
-`⚠ ${tipoEmergencia} ⚠
+`PEDIDO DE AJUDA
 
-Preciso de ajuda agora!
+Tipo: ${tipoEmergencia}
 
-Localização:
-${link}
+Localizacao: ${link}
 
-Precisão: ${accuracy ? Math.round(accuracy)+" metros" : "não disponível"}`;
+Precisao: ${prec}`;
 
   const url = `https://wa.me/${NUMERO_DESTINO}?text=${encodeURIComponent(msg)}`;
   window.open(url,"_blank");
