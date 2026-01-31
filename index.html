@@ -36,47 +36,135 @@ p{color:#ccc;margin-bottom:25px;}
   font-weight:bold;color:white;
   background:linear-gradient(135deg,#b00020,#e53935);
 }
+.btn span.emoji{
+  font-size:1.4em;
+  margin:0 8px;
+}
 .footer{margin-top:20px;font-size:.75em;color:#aaa;}
+
+/* LIGHTBOX */
+#lightbox{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+.lightbox-content{
+  background:#2b2b2b;
+  padding:25px;
+  border-radius:12px;
+  text-align:center;
+  color:white;
+  width:85%;
+  max-width:300px;
+  border:2px solid var(--vermelho);
+}
+.spinner{
+  width:40px;
+  height:40px;
+  border:4px solid #555;
+  border-top:4px solid #e53935;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  margin:15px auto;
+}
+@keyframes spin{
+  to{transform:rotate(360deg);}
+}
+.lightbox-content button{
+  margin-top:15px;
+  padding:10px 15px;
+  border:none;
+  border-radius:8px;
+  background:#e53935;
+  color:white;
+  font-weight:bold;
+}
 </style>
 </head>
 
 <body>
+
 <div class="container">
   <div class="logo">🚨</div>
   <h1>Botões de Emergência</h1>
-  <p>Toque no botão correspondente para acionar o serviço desejado imediatamente.</p>
+  <p>Toque no botão correspondente para acionar ajuda.</p>
 
-  <a class="btn" href="tel:+5511999990001">📞 Segurança Interna</a>
-  <a class="btn" href="tel:+5511999990002">🏥 Enfermaria</a>
-
-  <a class="btn" href="#" onclick="iniciarLocalizacao();return false;">
-    🚒 Corpo de Bombeiros
+  <a class="btn" href="#" onclick="definirTipo('SOCORRO MÉDICO'); iniciarLocalizacao(); return false;">
+    <span class="emoji">✚</span> SOCORRO MÉDICO <span class="emoji">✚</span>
   </a>
 
-  <a class="btn" href="tel:190">🚓 Polícia Militar (190)</a>
-  <a class="btn" href="tel:+5511999990002">⚡ Manutenção</a>
+  <a class="btn" href="#" onclick="definirTipo('INCÊNDIO / FUMAÇA'); iniciarLocalizacao(); return false;">
+    <span class="emoji">🔥</span> INCÊNDIO / FUMAÇA <span class="emoji">🔥</span>
+  </a>
+
+  <a class="btn" href="#" onclick="definirTipo('RISCO ESTRUTURAL'); iniciarLocalizacao(); return false;">
+    <span class="emoji">⚡</span> RISCO ESTRUTURAL <span class="emoji">⚡</span>
+  </a>
+
+  <a class="btn" href="#" onclick="definirTipo('CONFLITO / AGRESSÃO'); iniciarLocalizacao(); return false;">
+    <span class="emoji">🚨</span> CONFLITO / AGRESSÃO <span class="emoji">🚨</span>
+  </a>
+
+  <a class="btn" href="#" onclick="definirTipo('VAZAMENTO / CONTAMINAÇÃO'); iniciarLocalizacao(); return false;">
+    <span class="emoji">☣</span> VAZAMENTO / CONTAMINAÇÃO <span class="emoji">☣</span>
+  </a>
+
+  <a class="btn" href="#" onclick="definirTipo('EVACUAÇÃO'); iniciarLocalizacao(); return false;">
+    <span class="emoji">🚪</span> EVACUAÇÃO <span class="emoji">🚪</span>
+  </a>
+
+  <a class="btn" href="#" onclick="definirTipo('OUTROS'); iniciarLocalizacao(); return false;">
+    <span class="emoji">⚠</span> OUTROS <span class="emoji">⚠</span>
+  </a>
 
   <div class="footer">Sistema de resposta rápida institucional</div>
 </div>
 
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <div class="lightbox-content">
+    <div class="spinner"></div>
+    <p><b>Localizando…</b><br>Melhorando precisão do GPS</p>
+    <button onclick="enviarSemPrecisao()">Enviar sem precisão</button>
+  </div>
+</div>
+
 <script>
-const NUMERO_DESTINO = "5515981144802"; // ← coloque só UM número
+const NUMERO_DESTINO = "5515981144802";
 
 let watchID = null;
-let precisaoMinima = 5; // começa em 5 metros
+let precisaoMinima = 5;
 let intervaloPrecisao = null;
+let tipoEmergencia = "EMERGÊNCIA";
+
+function definirTipo(tipo){
+  tipoEmergencia = tipo;
+}
+
+function mostrarLightbox(){
+  document.getElementById("lightbox").style.display="flex";
+}
+
+function esconderLightbox(){
+  document.getElementById("lightbox").style.display="none";
+}
 
 function iniciarLocalizacao(){
   precisaoMinima = 5;
+  mostrarLightbox();
 
   if(!navigator.geolocation){
     alert("Geolocalização não suportada.");
+    esconderLightbox();
     return;
   }
 
   intervaloPrecisao = setInterval(()=>{
     precisaoMinima += 2;
-    console.log("Precisão mínima agora:", precisaoMinima, "m");
   },250);
 
   watchID = navigator.geolocation.watchPosition(
@@ -84,8 +172,6 @@ function iniciarLocalizacao(){
       const lat = pos.coords.latitude;
       const lon = pos.coords.longitude;
       const accuracy = pos.coords.accuracy;
-
-      console.log("Precisão atual:", accuracy);
 
       if(accuracy <= precisaoMinima){
         pararLocalizacao();
@@ -103,30 +189,37 @@ function iniciarLocalizacao(){
   );
 }
 
+function enviarSemPrecisao(){
+  pararLocalizacao();
+  enviarWhatsApp("","",null);
+}
+
 function pararLocalizacao(){
   if(watchID){
     navigator.geolocation.clearWatch(watchID);
     watchID = null;
   }
   clearInterval(intervaloPrecisao);
+  esconderLightbox();
 }
 
 function enviarWhatsApp(lat,lon,accuracy){
-  const link = `https://maps.google.com/?q=${lat},${lon}&t=k`;
-    const msg =
+  let link = lat ? `https://maps.google.com/?q=${lat},${lon}&t=k` : "Localização não precisa";
 
-      `⚠ PEDIDO DE AJUDA ⚠
-      
-      Preciso de ajuda agora!
-      
-      Minha localização:
-      ${link}
-      
-      Precisão aproximada: ${Math.round(accuracy)} metros.`;
+  const msg =
+`⚠ ${tipoEmergencia} ⚠
+
+Preciso de ajuda agora!
+
+Localização:
+${link}
+
+Precisão: ${accuracy ? Math.round(accuracy)+" metros" : "não disponível"}`;
 
   const url = `https://wa.me/${NUMERO_DESTINO}?text=${encodeURIComponent(msg)}`;
   window.open(url,"_blank");
 }
 </script>
+
 </body>
 </html>
