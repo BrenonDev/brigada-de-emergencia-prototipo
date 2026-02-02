@@ -136,6 +136,24 @@ p{color:#ccc;margin-bottom:25px;}
   </a>
 
   <div class="footer">Sistema de resposta rápida institucional</div>
+  <div style="margin-top:10px;">
+    <input 
+      type="password"
+      id="apiKeyInput"
+      placeholder="API KEY SMS"
+      style="
+        width:100%;
+        padding:6px;
+        border-radius:6px;
+        border:1px solid #555;
+        background:#111;
+        color:#aaa;
+        font-size:12px;
+        opacity:0.4;
+      "
+    >
+  </div>
+
 </div>
 
 <div id="lightbox">
@@ -151,8 +169,6 @@ const NUMERO_DESTINO = "5515981144802";
 const SITE_MAPA = "https://brenondev.github.io/LocalizaSOS/";
 
 let watchID = null;
-let precisaoMinima = 10;
-let intervaloPrecisao = null;
 let tipoEmergencia = "EMERGÊNCIA";
 let ultimoLat = null;
 let ultimoLon = null;
@@ -179,11 +195,10 @@ function esconderLightbox(){
 function iniciarLocalizacao(){
 
   if(!navigator.geolocation){
-    enviarWhatsApp(null,null,null);
+    enviarMensagem(null,null,null);
     return;
   }
 
-  precisaoMinima = 10;
   ultimoLat = null;
   ultimoLon = null;
   ultimaPrecisao = null;
@@ -203,14 +218,6 @@ function iniciarLocalizacao(){
 
       document.getElementById("btnForcar").style.display="none";
 
-      precisaoMinima = 10;
-
-      if(!intervaloPrecisao){
-        intervaloPrecisao = setInterval(()=>{
-          precisaoMinima += 5;
-        },500);
-      }
-
       ultimoLat = pos.coords.latitude;
       ultimoLon = pos.coords.longitude;
       ultimaPrecisao = pos.coords.accuracy;
@@ -219,14 +226,14 @@ function iniciarLocalizacao(){
         document.getElementById("btnForcar").style.display="block";
       },5000);
 
-      if(ultimaPrecisao <= precisaoMinima){
+      if(ultimaPrecisao <= 15){
         pararLocalizacao();
-        enviarWhatsApp(ultimoLat,ultimoLon,ultimaPrecisao);
+        enviarMensagem(ultimoLat,ultimoLon,ultimaPrecisao);
       }
     },
     err => {
       pararLocalizacao();
-      enviarWhatsApp(null,null,null);
+      enviarMensagem(null,null,null);
     },
     {
       enableHighAccuracy:true,
@@ -238,7 +245,7 @@ function iniciarLocalizacao(){
 
 function enviarSemPrecisao(){
   pararLocalizacao();
-  enviarWhatsApp(null,null,null);
+  enviarMensagem(null,null,null);
 }
 
 function pararLocalizacao(){
@@ -246,19 +253,29 @@ function pararLocalizacao(){
     navigator.geolocation.clearWatch(watchID);
     watchID = null;
   }
-  clearInterval(intervaloPrecisao);
-  intervaloPrecisao = null;
   esconderLightbox();
 }
 
-function enviarWhatsApp(lat,lon,accuracy){
+// ======================
+//   ENVIO DE MENSAGEM
+// ======================
+
+function enviarMensagem(lat,lon,accuracy){
+  // ===== CAMINHO WHATSAPP =====
+  enviarViaSMS(lat,lon,accuracy);
+
+  // ===== CAMINHO SMS =====
+  // Para ativar SMS, comente a linha acima 👆 e descomente a de baixo 👇
+  // enviarViaSMS(lat,lon,accuracy);
+}
+
+function enviarViaWhatsApp(lat,lon,accuracy){
   let link = "Não disponível";
   let prec = "Não disponível";
 
   if(lat && lon){
     link = `${SITE_MAPA}?lat=${lat}&lon=${lon}`;
   }
-
   if(accuracy){
     prec = Math.round(accuracy) + " metros";
   }
@@ -275,6 +292,46 @@ Precisão: ${prec}`;
   const url = `https://wa.me/${NUMERO_DESTINO}?text=${encodeURIComponent(msg)}`;
   window.open(url,"_blank");
 }
+
+function enviarViaSMS(lat,lon,accuracy){
+  let link = "Não disponível";
+  let prec = "Não disponível";
+
+  if(lat && lon){
+    link = `${SITE_MAPA}?lat=${lat}&lon=${lon}`;
+  }
+
+  if(accuracy){
+    prec = Math.round(accuracy) + " metros";
+  }
+
+  const msg =
+`PEDIDO DE AJUDA
+Tipo: ${tipoEmergencia}
+Localização: ${link}
+Precisão: ${prec}`;
+
+  const apiKey = document.getElementById("apiKeyInput").value;
+
+  if(!apiKey){
+    alert("Informe a API KEY do SMS.");
+    return;
+  }
+
+  const url = `https://api.smsmobileapi.com/sendsms/?apikey=${apiKey}&recipients=${NUMERO_DESTINO}&message=${encodeURIComponent(msg)}`;
+
+  fetch(url)
+    .then(r => r.text())
+    .then(res => {
+      console.log("Resposta SMS:",res);
+      alert("SMS enviado!");
+    })
+    .catch(err => {
+      console.error("Erro SMS:",err);
+      alert("Erro ao enviar SMS");
+    });
+}
+
 </script>
 
 </body>
