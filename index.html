@@ -165,7 +165,7 @@ p{color:#ccc;margin-bottom:25px;}
 </div>
 
 <script>
-const NUMERO_DESTINO = "5515991793754";
+const NUMERO_DESTINO = "5515981144802";
 const SITE_MAPA = "https://brenondev.github.io/LocalizaSOS/";
 
 let watchID = null;
@@ -262,7 +262,7 @@ function pararLocalizacao(){
 
 function enviarMensagem(lat,lon,accuracy){
   // ===== CAMINHO WHATSAPP =====
-  enviarViaSMS(lat,lon,accuracy);
+  enviarViaWhatsApp(lat,lon,accuracy);
 
   // ===== CAMINHO SMS =====
   // Para ativar SMS, comente a linha acima 👆 e descomente a de baixo 👇
